@@ -4,12 +4,10 @@
 # Allow specific folders
 !client/
 !server/
-!tests/
 
 # Allow root config files
 !.gitignore
 !README.md
-!playwright.config.ts
 !package.json
 !package-lock.json
 

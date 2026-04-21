@@ -4,7 +4,7 @@
   "description": "A premium, glassmorphic real-time chat application built with React, Node.js, and Socket.io.",
   "main": "index.js",
   "scripts": {
-    "test": "playwright test"
+    "dev": "concurrently \"npm run dev --prefix client\" \"PORT=3001 npm start --prefix server\""
   },
   "repository": {
     "type": "git",
@@ -18,6 +18,6 @@
   },
   "homepage": "https://github.com/onkarundale26/nocturne-chat#readme",
   "devDependencies": {
-    "@playwright/test": "^1.59.1"
+    "concurrently": "^9.2.1"
   }
 }
