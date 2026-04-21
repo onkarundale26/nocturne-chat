@@ -26,8 +26,20 @@ io.on('connection', (socket) => {
   console.log('User connected:', socket.id);
 
   socket.on('join', (username) => {
+    // Leave any previous identity rooms (shouldn't happen often but good practice)
+    socket.rooms.forEach(room => {
+      if (room.startsWith('user:')) socket.leave(room);
+    });
+    
+    // Join a private room named by username
+    socket.join(`user:${username}`);
+    
     const user = { id: socket.id, username, status: 'online' };
+    
+    // Remove any existing user entries with this username (prevents duplicates)
+    users = users.filter(u => u.username !== username);
     users.push(user);
+    
     io.emit('users', users);
     socket.broadcast.emit('message', {
       id: Date.now(),
@@ -40,24 +52,26 @@ io.on('connection', (socket) => {
   });
 
   socket.on('send_message', (data) => {
-    const { text, recipientId, senderName, type, imageUrl } = data;
+    const { text, recipientId, recipientName, senderName, type, imageUrl } = data;
+    
     const message = {
       id: Date.now(),
       senderId: socket.id,
       senderName,
       recipientId,
+      recipientName, // Store the name for easier filtering
       text,
       type,
       imageUrl,
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     };
     
-    // ✅ Send ONLY to recipient
-    if (recipientId) {
-      io.to(recipientId).emit('receive_message', message);
+    // ✅ DELIVERY: Send exclusively to the recipient's identity room
+    if (recipientName) {
+      io.to(`user:${recipientName}`).emit('receive_message', message);
     }
     
-    // ✅ Send back to sender (for sync)
+    // ✅ DELIVERY: Send back to the sender
     socket.emit('receive_message', message);
   });
 

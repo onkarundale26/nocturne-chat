@@ -11,6 +11,7 @@ interface Message {
   senderId: string;
   senderName: string;
   recipientId?: string;
+  recipientName?: string;
   text: string;
   timestamp: string;
   type: 'incoming' | 'outgoing' | 'system' | 'image';

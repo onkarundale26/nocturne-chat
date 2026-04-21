@@ -15,12 +15,17 @@ const ChatWindow: React.FC = () => {
 
   const activeUser = users.find(u => u.id === activeChatId);
 
-  // ✅ Filter messages by active chat (conversation between A and B)
-  const filteredMessages = messages.filter(msg => 
-    (msg.senderId === currentUser?.id && msg.recipientId === activeChatId) ||
-    (msg.senderId === activeChatId && msg.recipientId === currentUser?.id) ||
-    (msg.type === 'system') // Keep system messages for now, or filter them too
-  );
+  // ✅ FILTER: Tight privacy logic using usernames (stable across refreshes)
+  const filteredMessages = messages.filter(msg => {
+    if (msg.type === 'system') return true;
+    
+    const isFromMe = msg.senderName === currentUser?.username;
+    const isToMe = msg.recipientName === currentUser?.username;
+    const isFromActiveChat = msg.senderName === activeUser?.username;
+    const isToActiveChat = msg.recipientName === activeUser?.username;
+
+    return (isFromMe && isToActiveChat) || (isFromActiveChat && isToMe);
+  });
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });

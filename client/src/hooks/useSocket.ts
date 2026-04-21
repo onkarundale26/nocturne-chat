@@ -53,10 +53,14 @@ export const useSocket = () => {
 
   const sendMessage = (text: string, recipientId: string, type: 'incoming' | 'outgoing' | 'image' = 'outgoing', imageUrl?: string) => {
     if (socketRef.current && currentUser) {
+      // Find the recipient name from our local users list
+      const recipient = useChatStore.getState().users.find(u => u.id === recipientId);
+      
       socketRef.current.emit('send_message', {
         senderId: socketRef.current.id,
         senderName: currentUser.username,
         recipientId,
+        recipientName: recipient?.username, // CRITICAL: Target the private room
         text,
         type,
         imageUrl
