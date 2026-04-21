@@ -8,6 +8,12 @@ export const useSocket = () => {
   const socketRef = useRef<Socket | null>(null);
   const { addMessage, setUsers, currentUser, setCurrentUser, activeChatId, incrementUnreadCount } = useChatStore();
 
+  // Use a ref to keep track of activeChatId for the socket listener without causing stale closures
+  const activeChatIdRef = useRef<string | null>(null);
+  useEffect(() => {
+    activeChatIdRef.current = activeChatId;
+  }, [activeChatId]);
+
   useEffect(() => {
     if (!currentUser) return;
 
@@ -31,9 +37,8 @@ export const useSocket = () => {
       socketRef.current.on('receive_message', (message) => {
         addMessage(message);
         
-        // ✅ Dynamic Unread Logic
-        // If message is from someone else and NOT the current active chat
-        if (message.senderId !== socketRef.current?.id && message.senderId !== activeChatId) {
+        // Use the ref here to always have the latest activeChatId
+        if (message.senderId !== socketRef.current?.id && message.senderId !== activeChatIdRef.current) {
           incrementUnreadCount(message.senderId);
         }
       });
@@ -44,7 +49,7 @@ export const useSocket = () => {
     }
 
     return () => {};
-  }, [currentUser, addMessage, setUsers, setCurrentUser, activeChatId, incrementUnreadCount]);
+  }, [currentUser, addMessage, setUsers, setCurrentUser, incrementUnreadCount]);
 
   const sendMessage = (text: string, recipientId: string, type: 'incoming' | 'outgoing' | 'image' = 'outgoing', imageUrl?: string) => {
     if (socketRef.current && currentUser) {
