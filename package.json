@@ -1,0 +1,23 @@
+{
+  "name": "chat-application",
+  "version": "1.0.0",
+  "description": "A premium, glassmorphic real-time chat application built with React, Node.js, and Socket.io.",
+  "main": "index.js",
+  "scripts": {
+    "test": "playwright test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/onkarundale26/nocturne-chat.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/onkarundale26/nocturne-chat/issues"
+  },
+  "homepage": "https://github.com/onkarundale26/nocturne-chat#readme",
+  "devDependencies": {
+    "@playwright/test": "^1.59.1"
+  }
+}
