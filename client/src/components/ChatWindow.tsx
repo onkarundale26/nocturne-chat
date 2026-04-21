@@ -86,8 +86,12 @@ const ChatWindow: React.FC = () => {
             filteredMessages.map((msg, index) => (
               <MessageBubble 
                 key={index}
-                message={msg}
-                isOutgoing={msg.senderId === currentUser?.id}
+                senderId={msg.senderId}
+                senderName={msg.senderName}
+                text={msg.text}
+                timestamp={msg.timestamp}
+                type={msg.type || 'outgoing'}
+                imageUrl={msg.imageUrl}
               />
             ))
           )}
