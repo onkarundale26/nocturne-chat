@@ -11,7 +11,7 @@ const ChatWindow: React.FC = () => {
   const messages = useChatStore((state) => state.messages);
   const currentUser = useChatStore((state) => state.currentUser);
   const { sendMessage, emitTyping } = useSocket();
-  const scrollRef = useRef<HTMLDivElement>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const activeUser = users.find(u => u.id === activeChatId);
 
@@ -23,9 +23,7 @@ const ChatWindow: React.FC = () => {
   );
 
   useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-    }
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [filteredMessages]);
 
   const handleSendMessage = (text: string, type: 'incoming' | 'outgoing' | 'image' = 'outgoing', imageUrl?: string) => {
@@ -76,24 +74,26 @@ const ChatWindow: React.FC = () => {
       </header>
 
       {/* Message Feed */}
-      <div 
-        ref={scrollRef}
-        className="flex-1 overflow-y-auto px-8 py-10 bg-surface-container/10 no-scrollbar"
-      >
+      <main className="flex-1 overflow-y-auto p-6 space-y-6 scrollbar-thin scrollbar-thumb-outline-variant/20 scrollbar-track-transparent">
         <div className="max-w-4xl mx-auto">
-          {filteredMessages.map((msg) => (
-            <MessageBubble 
-              key={msg.id}
-              senderId={msg.senderId}
-              senderName={msg.senderName}
-              text={msg.text}
-              timestamp={msg.timestamp}
-              type={msg.type}
-              imageUrl={msg.imageUrl}
-            />
-          ))}
+          {filteredMessages.length === 0 ? (
+            <div className="flex flex-col items-center justify-center h-64 text-on-surface-variant/40">
+              <span className="material-symbols-outlined text-6xl mb-4 opacity-20">forum</span>
+              <p className="text-sm font-medium uppercase tracking-widest">No messages yet</p>
+              <p className="text-xs mt-2 italic">Start the conversation with a vibe...</p>
+            </div>
+          ) : (
+            filteredMessages.map((msg, index) => (
+              <MessageBubble 
+                key={index}
+                message={msg}
+                isOutgoing={msg.senderId === currentUser?.id}
+              />
+            ))
+          )}
+          <div ref={messagesEndRef} />
         </div>
-      </div>
+      </main>
 
       {/* Input */}
       <MessageInput 
