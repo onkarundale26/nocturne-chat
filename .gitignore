@@ -1,0 +1,24 @@
+# Ignore everything by default
+/*
+
+# Allow specific folders
+!client/
+!server/
+
+# Allow root config files
+!.gitignore
+!README.md
+
+# Ignore specific build/dependency artifacts within allowed folders
+client/node_modules/
+client/dist/
+client/.env
+server/node_modules/
+server/.env
+
+# Always ignore zip files and other source folders
+chat-screen/
+join-screen/
+*.zip
+.DS_Store
+Thumbs.db
